@@ -13,8 +13,6 @@ char *getCommand(ssize_t *n, char **inputLine)
 	if ((*n = getline(&line, &bufferSize, stdin)) == -1 || *line == EOF)
 	{
 		free(line);
-		if (*n == -1)
-			exit(-1);
 		exit(0);
 	}
 	*inputLine = line;

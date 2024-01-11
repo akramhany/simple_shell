@@ -8,7 +8,7 @@
 #include <errno.h>
 
 void shell(char *programName);
-char *getCommand(void);
+char *getCommand(ssize_t *n, char **inputLine);
 
 extern char **environ;
 

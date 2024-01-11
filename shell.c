@@ -5,18 +5,18 @@
  *
  * Return: a string
  */
-char *getCommand(void)
+char *getCommand(ssize_t *n, char **inputLine)
 {
 	char *line = NULL;
-	size_t n = 0;
+	size_t bufferSize = 0;
 
-	if (getline(&line, &n, stdin) == -1 || *line == EOF)
+	if ((*n = getline(&line, &bufferSize, stdin)) == -1 || *line == EOF)
 	{
 		free(line);
 		exit(-1);
 	}
-
-	line = strtok(line, "\n");
+	*inputLine = line;
+	line = strtok(line, "\n ");
 
 	return (line);
 }
@@ -29,23 +29,27 @@ char *getCommand(void)
 void shell(char *programName)
 {
 	char *argv[2];
+	char *inputLine = NULL;
 	const char *const shellName = "#cisfun$";
 	int status = 0;
+	ssize_t n = 0;
 	pid_t pid;
 
 	argv[0] = NULL;
 	argv[1] = NULL;
 
 	do {
-		printf("%s ", shellName);
+		if (isatty(STDIN_FILENO) == 1)
+			printf("%s ", shellName);
 
 		if (argv[0] != NULL)
 		{
-			free(argv[0]);
+			free(inputLine);
+			inputLine = NULL;
 			argv[0] = NULL;
 		}
 
-		argv[0] = getCommand();
+		argv[0] = getCommand(&n, &inputLine);
 		pid = fork();
 
 	} while (pid != 0 && (wait(&status) != -1));

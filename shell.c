@@ -42,15 +42,15 @@ void shell(char *programName)
 		if (isatty(STDIN_FILENO) == 1)
 			printf("%s ", shellName);
 
-		if (inputLine != NULL)
+		argv[0] = getCommand(&n, &inputLine);
+		pid = fork();
+
+		if (inputLine != NULL && pid != 0)
 		{
 			free(inputLine);
 			inputLine = NULL;
 			argv[0] = NULL;
 		}
-
-		argv[0] = getCommand(&n, &inputLine);
-		pid = fork();
 
 	} while (pid != 0 && (wait(&status) != -1));
 
@@ -59,7 +59,10 @@ void shell(char *programName)
 		if (execve(argv[0], argv, environ) == -1)
 		{
 			if (errno == ENOENT)
+			{
 				printf("%s: No such file or directory\n", programName);
+				free (inputLine);
+			}
 		}
 	}
 }

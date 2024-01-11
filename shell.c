@@ -13,7 +13,9 @@ char *getCommand(ssize_t *n, char **inputLine)
 	if ((*n = getline(&line, &bufferSize, stdin)) == -1 || *line == EOF)
 	{
 		free(line);
-		exit(-1);
+		if (*n == -1)
+			exit(-1);
+		exit(0);
 	}
 	*inputLine = line;
 	line = strtok(line, "\n ");

@@ -42,7 +42,7 @@ void shell(char *programName)
 		if (isatty(STDIN_FILENO) == 1)
 			printf("%s ", shellName);
 
-		if (argv[0] != NULL)
+		if (inputLine != NULL)
 		{
 			free(inputLine);
 			inputLine = NULL;

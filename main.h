@@ -9,6 +9,7 @@
 
 void shell(char *programName);
 char *getCommand(ssize_t *n, char **inputLine);
+int checkOnlySpaces(char *line);
 
 extern char **environ;
 

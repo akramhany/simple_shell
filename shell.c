@@ -1,5 +1,30 @@
 #include "./main.h"
 
+
+/**
+ * checkOnlySpaces - takes a string and check if it contains only spaces or not
+ * @line: the string to check (given in char * form)
+ *
+ * Return: bool to indicate if the string contains only spaces or not
+ */
+int checkOnlySpaces(char *line)
+{
+	int i = 0;
+
+	if (line == NULL)
+		return 0;
+
+
+	while (line[i] != '\0')
+	{
+		if (line[i] != ' ' && line[i] != '\n')
+			return 0;
+		i++;
+	}
+
+	return 1;
+}
+
 /**
  * getCommand - take input command from stdin and return it
  *
@@ -16,8 +41,20 @@ char *getCommand(ssize_t *n, char **inputLine)
 		exit(0);
 	}
 
-	*inputLine = line;
-	line = strtok(line, "\n");
+	if (checkOnlySpaces(line) == 1)
+	{
+		printf("firstOP\n");
+		free(line);
+		line = NULL;
+		*inputLine = NULL;
+	}
+	else
+	{
+		printf("secondOP\n");
+		*inputLine = line;
+		line = strtok(line, "\n ");
+	}
+
 
 	return (line);
 }
@@ -34,7 +71,7 @@ void shell(char *programName)
 	const char *const shellName = "#cisfun$";
 	int status = 0;
 	ssize_t n = 0;
-	pid_t pid;
+	pid_t pid = 1;
 
 	argv[0] = NULL;
 	argv[1] = NULL;
@@ -44,7 +81,9 @@ void shell(char *programName)
 			printf("%s ", shellName);
 
 		argv[0] = getCommand(&n, &inputLine);
+
 		pid = fork();
+
 		if (inputLine != NULL && pid != 0)
 		{
 			free(inputLine);
@@ -54,7 +93,7 @@ void shell(char *programName)
 
 	} while (pid != 0 && (wait(&status) != -1));
 
-	if (pid == 0)
+	if (pid == 0 && argv[0] != NULL)
 	{
 		if (execve(argv[0], argv, environ) == -1)
 		{

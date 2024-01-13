@@ -98,13 +98,15 @@ void shell(char *programName)
 		{
 			if (errno == ENOENT)
 			{
-				printf("%s: No such file or directory\n", programName);
+				printf("%s: %d: %s: No such file or directory\n", programName, instructionNumber, argv[0]);
 				free(inputLine);
+				exit(1);
 			}
 			else if (errno == EACCES)
 			{
 				printf("%s: %d: %s: Permission denied\n", programName, instructionNumber, argv[0]);
-			       free(inputLine);	
+				free(inputLine);
+				exit(126);	
 			}
 		}
 	}

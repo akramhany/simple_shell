@@ -43,14 +43,12 @@ char *getCommand(ssize_t *n, char **inputLine)
 
 	if (checkOnlySpaces(line) == 1)
 	{
-		printf("firstOP\n");
 		free(line);
 		line = NULL;
 		*inputLine = NULL;
 	}
 	else
 	{
-		printf("secondOP\n");
 		*inputLine = line;
 		line = strtok(line, "\n ");
 	}

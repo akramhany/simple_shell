@@ -15,8 +15,9 @@ char *getCommand(ssize_t *n, char **inputLine)
 		free(line);
 		exit(0);
 	}
+
 	*inputLine = line;
-	line = strtok(line, "\n ");
+	line = strtok(line, "\n");
 
 	return (line);
 }
@@ -44,7 +45,6 @@ void shell(char *programName)
 
 		argv[0] = getCommand(&n, &inputLine);
 		pid = fork();
-
 		if (inputLine != NULL && pid != 0)
 		{
 			free(inputLine);

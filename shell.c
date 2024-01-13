@@ -67,7 +67,7 @@ void shell(char *programName)
 	char *argv[2];
 	char *inputLine = NULL;
 	const char *const shellName = "#cisfun$";
-	int status = 0;
+	int status = 0, instructionNumber = 0;
 	ssize_t n = 0;
 	pid_t pid = 1;
 
@@ -79,6 +79,7 @@ void shell(char *programName)
 			printf("%s ", shellName);
 
 		argv[0] = getCommand(&n, &inputLine);
+		instructionNumber++;
 
 		pid = fork();
 
@@ -98,7 +99,12 @@ void shell(char *programName)
 			if (errno == ENOENT)
 			{
 				printf("%s: No such file or directory\n", programName);
-				free (inputLine);
+				free(inputLine);
+			}
+			else if (errno == EACCES)
+			{
+				printf("%s: %d: %s: Permission denied\n", programName, instructionNumber, argv[0]);
+			       free(inputLine);	
 			}
 		}
 	}

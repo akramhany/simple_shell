@@ -9,7 +9,7 @@
  *
  * Return: 0
  */
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
 	if (argc > 1)
 	{
@@ -18,5 +18,6 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 	shell(argv[0]);
+
 	return (0);
 }

@@ -30,10 +30,12 @@ int checkOnlySpaces(char *line)
  *
  * Return: a string
  */
-char *getCommand(ssize_t *n, char **inputLine)
+char **getCommand(ssize_t *n, char **inputLine)
 {
-	char *line = NULL;
+	char *line = NULL, *token = NULL;
 	size_t bufferSize = 0;
+	char **argv = NULL;
+	int argvSize = 0, i = 0;
 
 	if ((*n = getline(&line, &bufferSize, stdin)) == -1 || *line == EOF)
 	{
@@ -49,12 +51,18 @@ char *getCommand(ssize_t *n, char **inputLine)
 	}
 	else
 	{
+		argvSize = getNumberOfWords(line);
+		argv = malloc(sizeof(char *) * (argvSize + 1));
 		*inputLine = line;
-		line = strtok(line, "\n ");
+		while ((token = strtok(line, "\n ")) != NULL)
+		{
+			argv[i++] = token;
+			line = NULL;
+		}
+		argv[argvSize] = NULL;
 	}
 
-
-	return (line);
+	return (argv);
 }
 
 
@@ -75,12 +83,14 @@ int executeCommand(char **argv, char *inputLine, char *programName, int instruct
 		{
 			printf("%s: %d: %s: No such file or directory\n", programName, instructionNumber, argv[0]);
 			free(inputLine);
+			free(argv);
 			exit(1);
 		}
 		else if (errno == EACCES)
 		{
 			printf("%s: %d: %s: Permission denied\n", programName, instructionNumber, argv[0]);
 			free(inputLine);
+			free(argv);
 			exit(126);	
 		}
 	}
@@ -92,25 +102,24 @@ int executeCommand(char **argv, char *inputLine, char *programName, int instruct
 /**
  * shell - simple shell program
  * @programName: the name of the program
- * RETURN: void
+ *
+ * Return: void
  */
 void shell(char *programName)
 {
-	char *argv[2];
+	char **argv = NULL;
 	char *inputLine = NULL;
 	const char *const shellName = "#cisfun$";
 	int status = 0, instructionNumber = 0;
 	ssize_t n = 0;
 	pid_t pid = 1;
 
-	argv[0] = NULL;
-	argv[1] = NULL;
 
 	do {
 		if (isatty(STDIN_FILENO) == 1)
 			printf("%s ", shellName);
 
-		argv[0] = getCommand(&n, &inputLine);
+		argv = getCommand(&n, &inputLine);
 		instructionNumber++;
 
 		pid = fork();
@@ -118,12 +127,13 @@ void shell(char *programName)
 		{
 			free(inputLine);
 			inputLine = NULL;
-			argv[0] = NULL;
+			free(argv);
+			argv = NULL;
 		}
 
 	} while (pid != 0 && (wait(&status) != -1));
 
-	if (pid == 0 && argv[0] != NULL)
+	if (pid == 0 && argv != NULL)
 	{
 		executeCommand(argv, inputLine, programName, instructionNumber);
 	}

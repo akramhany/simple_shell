@@ -13,10 +13,13 @@ int getNumberOfWords(char *str)
 
 	while (str[i] != '\0')
 	{
-		if (!isWord && str[i] != ' ' && str[i] != '\n')
+		if (str[i] != ' ' && str[i] != '\n')
 		{
-			isWord = 1;
-			numOfWords++;
+			if (!isWord)
+			{
+				isWord = 1;
+				numOfWords++;
+			}
 		}
 		else
 			isWord = 0;

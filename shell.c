@@ -12,21 +12,23 @@ int checkOnlySpaces(char *line)
 	int i = 0;
 
 	if (line == NULL)
-		return 0;
+		return (0);
 
 
 	while (line[i] != '\0')
 	{
 		if (line[i] != ' ' && line[i] != '\n')
-			return 0;
+			return (0);
 		i++;
 	}
 
-	return 1;
+	return (1);
 }
 
 /**
  * getCommand - take input command from stdin and return it
+ * @n: the size of the input line getting from stdin
+ * @inputLine: pointer to the inputLine to free it after finishing execution
  *
  * Return: a string
  */
@@ -37,7 +39,9 @@ char **getCommand(ssize_t *n, char **inputLine)
 	char **argv = NULL;
 	int argvSize = 0, i = 0;
 
-	if ((*n = getline(&line, &bufferSize, stdin)) == -1 || *line == EOF)
+	*n = getline(&line, &bufferSize, stdin);
+
+	if (*n == -1 || *line == EOF)
 	{
 		free(line);
 		exit(0);
@@ -75,23 +79,26 @@ char **getCommand(ssize_t *n, char **inputLine)
  *
  * Return: 1 means it executed without errors, 0 means it encountered an error
  */
-int executeCommand(char **argv, char *inputLine, char *programName, int instructionNumber)
+int executeCommand(char **argv, char *inputLine,
+		   char *programName, int instructionNumber)
 {
 	if (execve(argv[0], argv, environ) == -1)
 	{
 		if (errno == ENOENT)
 		{
-			printf("%s: %d: %s: No such file or directory\n", programName, instructionNumber, argv[0]);
+			printf("%s: %d: %s: No such file or directory\n",
+				programName, instructionNumber, argv[0]);
 			free(inputLine);
 			free(argv);
 			exit(1);
 		}
 		else if (errno == EACCES)
 		{
-			printf("%s: %d: %s: Permission denied\n", programName, instructionNumber, argv[0]);
+			printf("%s: %d: %s: Permission denied\n",
+				programName, instructionNumber, argv[0]);
 			free(inputLine);
 			free(argv);
-			exit(126);	
+			exit(126);
 		}
 	}
 

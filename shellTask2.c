@@ -1,11 +1,12 @@
 #include "main.h"
 
 /**
- * getNumberOfWords - takes a string an returns the number of arguments (words) in it.
+ * getNumberOfWords - takes a string and,
+ * returns the number of arguments (words) in it.
  * @str: the string taken as input.
  *
  * Return: an integer for the number of words (arguments).
- */ 
+ */
 int getNumberOfWords(char *str)
 {
 	int i = 0, numOfWords = 0;

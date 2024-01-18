@@ -138,7 +138,7 @@ void shell(char *programName)
 		}
 		else if (argv != NULL)
 		{
-			printf("%s: %d: %s: not found\n",
+			fprintf(stderr, "%s: %d: %s: not found\n",
 				programName, instructionNumber, argv[0]);
 			notAbsPath = 0;
 		}

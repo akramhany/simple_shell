@@ -98,7 +98,6 @@ int executeCommand(char **argv, char *programName,
 {
 	if (execve(argv[0], argv, environ) == -1)
 	{
-		printf("%s \n", argv[0]);
 		if (errno == ENOENT)
 		{
 			printf("%s: %d: %s: No such file or directory\n",
@@ -145,7 +144,8 @@ void shell(char *programName)
 		{
 			free(inputLine);
 			free(argv);
-			exit(0);
+			status = WEXITSTATUS(status);
+			exit(status);
 		}
 		if (argv != NULL && (*argv[0] == '/' || *argv[0] == '.'))
 		{

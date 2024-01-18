@@ -79,8 +79,8 @@ char **getCommand(ssize_t *n, char **inputLine)
  *
  * Return: 1 means it executed without errors, 0 means it encountered an error
  */
-int executeCommand(char **argv, char *inputLine,
-		   char *programName, int instructionNumber)
+int executeCommand(char **argv, char *programName,
+		   int instructionNumber)
 {
 	if (execve(argv[0], argv, environ) == -1)
 	{
@@ -88,17 +88,13 @@ int executeCommand(char **argv, char *inputLine,
 		{
 			printf("%s: %d: %s: No such file or directory\n",
 				programName, instructionNumber, argv[0]);
-			free(inputLine);
-			free(argv);
-			exit(1);
+			return (1);
 		}
 		else if (errno == EACCES)
 		{
 			printf("%s: %d: %s: Permission denied\n",
 				programName, instructionNumber, argv[0]);
-			free(inputLine);
-			free(argv);
-			exit(126);
+			return (126);
 		}
 	}
 
@@ -117,7 +113,7 @@ void shell(char *programName)
 	char **argv = NULL;
 	char *inputLine = NULL;
 	const char *const shellName = "#cisfun$";
-	int status = 0, instructionNumber = 0;
+	int status = 0, instructionNumber = 0, notAbsPath = 0;
 	ssize_t n = 0;
 	pid_t pid = 1;
 
@@ -129,19 +125,49 @@ void shell(char *programName)
 		argv = getCommand(&n, &inputLine);
 		instructionNumber++;
 
-		pid = fork();
+		if (argv != NULL && *argv[0] == '/')
+		{
+			pid = fork();
+			notAbsPath = 0;
+		}
+		else if (searchForCommand(argv) == 1)
+		{
+			pid = fork();
+			notAbsPath = 1;
+		}
+		else if (argv != NULL)
+		{
+			printf("%s: %d: %s: No such file or directory\n",
+				programName, instructionNumber, argv[0]);
+			notAbsPath = 0;
+		}
+
 		if (inputLine != NULL && pid != 0)
 		{
 			free(inputLine);
 			inputLine = NULL;
+			if (notAbsPath && argv[0])
+			{
+				free(argv[0]);
+				argv[0] = NULL;
+			}
 			free(argv);
 			argv = NULL;
 		}
 
-	} while (pid != 0 && (wait(&status) != -1));
+	} while (pid != 0 && wait(&status));
 
 	if (pid == 0 && argv != NULL)
 	{
-		executeCommand(argv, inputLine, programName, instructionNumber);
+		int statusCode = executeCommand(argv, programName, instructionNumber);
+
+		free(inputLine);
+		if (notAbsPath && argv[0])
+		{
+			free(argv[0]);
+			argv[0] = NULL;
+		}
+		free(argv);
+		exit (statusCode);
 	}
 }

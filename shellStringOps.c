@@ -37,7 +37,7 @@ void strCopyWithLimit(char *dest, char *src, int maxSize)
 	if (!dest || !src)
 		return;
 
-	while (i < maxSize && src[i] != '\0')
+	while (i < maxSize && src[i] != '\0' && src[i] != ' ')
 	{
 		dest[i] = src[i];
 		i++;

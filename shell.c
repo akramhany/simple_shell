@@ -1,5 +1,19 @@
 #include "./main.h"
 
+/**
+ * printEnv - prints the environ variable
+ *
+ * Return: void
+ */
+void printEnv(void)
+{	
+	int i = 0;
+	while (environ[i])
+	{
+		printf("%s\n", environ[i]);
+		i++;
+	}
+}
 
 /**
  * checkOnlySpaces - takes a string and check if it contains only spaces or not
@@ -123,13 +137,23 @@ void shell(char *programName)
 		if (isatty(STDIN_FILENO) == 1)
 			printf("%s ", shellName);
 
+		notAbsPath = 0;
 		argv = getCommand(&n, &inputLine);
 		instructionNumber++;
 
+		if (argv && strcmp(argv[0], "exit") == 0)
+		{
+			free(inputLine);
+			free(argv);
+			exit(0);
+		}
 		if (argv != NULL && (*argv[0] == '/' || *argv[0] == '.'))
 		{
 			pid = fork();
-			notAbsPath = 0;
+		}
+		else if (argv && strcmp(argv[0], "env") == 0)
+		{
+			printEnv();
 		}
 		else if (searchForCommand(argv) == 1)
 		{
@@ -140,7 +164,6 @@ void shell(char *programName)
 		{
 			fprintf(stderr, "%s: %d: %s: not found\n",
 				programName, instructionNumber, argv[0]);
-			notAbsPath = 0;
 		}
 
 		if (inputLine != NULL && pid != 0)

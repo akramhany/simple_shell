@@ -19,6 +19,7 @@ void getPathValue(char *pathValue);
 int searchForCommand(char **argv);
 void copyPath(char *pathValue, char *value);
 void strCopyWithLimit(char *dest, char *src, int maxSize);
+void printEnv(void);
 
 extern char **environ;
 

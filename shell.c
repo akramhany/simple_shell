@@ -84,6 +84,7 @@ int executeCommand(char **argv, char *programName,
 {
 	if (execve(argv[0], argv, environ) == -1)
 	{
+		printf("%s \n", argv[0]);
 		if (errno == ENOENT)
 		{
 			printf("%s: %d: %s: No such file or directory\n",
@@ -125,7 +126,7 @@ void shell(char *programName)
 		argv = getCommand(&n, &inputLine);
 		instructionNumber++;
 
-		if (argv != NULL && *argv[0] == '/')
+		if (argv != NULL && (*argv[0] == '/' || *argv[0] == '.'))
 		{
 			pid = fork();
 			notAbsPath = 0;

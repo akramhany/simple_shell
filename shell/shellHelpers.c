@@ -1,4 +1,4 @@
-#include "main.h"
+#include "../main.h"
 
 /**
  * getPathValue - copy the value of the PATH variable of the environment

@@ -1,4 +1,4 @@
-#include "main.h"
+#include "../main.h"
 
 /**
  * copyPath - takes 2 strings one of them has the path value of the environment,
